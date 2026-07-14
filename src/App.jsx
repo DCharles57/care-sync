@@ -1,10 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function App() {
   const [taskName, setTaskName] = useState('')
   const [caregiver, setCaregiver] = useState('')
-  const [tasks, setTasks] = useState([])
-
+  const [tasks, setTasks] = useState(() => {
+  const savedTasks = localStorage.getItem('careSyncTasks')
+  return savedTasks ? JSON.parse(savedTasks) : []
+})
+useEffect(() => {
+  localStorage.setItem('careSyncTasks', JSON.stringify(tasks))
+}, [tasks])
   function handleSubmit(event) {
     event.preventDefault()
 
