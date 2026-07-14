@@ -2,15 +2,37 @@ import { useState } from 'react'
 
 function App() {
   const [taskName, setTaskName] = useState('')
-const [tasks, setTasks] = useState([])
+  const [caregiver, setCaregiver] = useState('')
+  const [tasks, setTasks] = useState([])
+
   function handleSubmit(event) {
-  event.preventDefault()
+    event.preventDefault()
 
-  if (!taskName.trim()) return
+    if (!taskName.trim() || !caregiver.trim()) return
 
-  setTasks([...tasks, taskName])
-  setTaskName('')
-}
+    const newTask = {
+      id: Date.now(),
+      taskName,
+      caregiver,
+      completed: false,
+    }
+
+    setTasks([...tasks, newTask])
+    setTaskName('')
+    setCaregiver('')
+  }
+
+  function toggleComplete(id) {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id
+        ? { ...task, completed: !task.completed }
+        : task
+    )
+
+    setTasks(updatedTasks)
+  }
+
+  
 
   return (
     <main>
@@ -27,20 +49,39 @@ const [tasks, setTasks] = useState([])
           onChange={(event) => setTaskName(event.target.value)}
           placeholder="Example: Pick up medication"
         />
+<label htmlFor="caregiver">Assign caregiver</label>
 
+<input
+  id="caregiver"
+  type="text"
+  value={caregiver}
+  onChange={(event) => setCaregiver(event.target.value)}
+  placeholder="Example: C1 or Mom"
+/>
         <button type="submit">Add task</button>
       </form>
       <section>
   <h2>Care Tasks</h2>
 
   <ul>
-    {tasks.map((task, index) => (
-      <li key={index}>{task}</li>
-    ))}
+   {tasks.map((task) => (
+  <li key={task.id}>
+    <strong>
+      {task.completed ? '✅ ' : ''}
+      {task.taskName}
+    </strong>
+
+    <span> — Assigned to: {task.caregiver}</span>
+
+    <button onClick={() => toggleComplete(task.id)}>
+      {task.completed ? 'Mark incomplete' : 'Mark complete'}
+    </button>
+  </li>
+))}
   </ul>
 </section>
     </main>
   )
-}
 
+}
 export default App
